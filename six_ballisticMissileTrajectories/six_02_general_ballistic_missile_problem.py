@@ -168,7 +168,10 @@ def solveForFreeFlightAngle(Q_bo: float, FPA_bo: float) -> float:
 
     num = (1.0 - Q_bo * cosFPASquared)
     den = math.sqrt(1.0 + Q_bo*(Q_bo - 2.0) * cosFPASquared)
-    cosPsiDiv2 = num/den
+    if math.isclose(den, 0.0):
+        cosPsiDiv2 = 0
+    else:
+        cosPsiDiv2 = num/den
 
     # make sure the cos is between 1 and -1
     if not(1 >= cosPsiDiv2 >= -1):

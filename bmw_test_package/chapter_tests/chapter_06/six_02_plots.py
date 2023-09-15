@@ -22,7 +22,7 @@ dot9 = []
 dot95 = []
 onedot0 = []
 
-for fpa in numpy.arange(0, 90, 0.5):
+for fpa in numpy.arange(0, 90.5, 0.5):
     print(fpa)
 
     dot3.append(six_02_general_ballistic_missile_problem.solveForFreeFlightAngle(0.3, fpa))
@@ -49,9 +49,10 @@ datacolumns = {"Q_bo = 0.3": dot3,
                "Q_bo = 0.95": dot95,
                "Q_bo = 1.0": onedot0}
 
-# Create empty data frame with predone column names
+# Create data frame with predone column names
 df = pd.DataFrame(datacolumns)
 
 df.plot()
+plt.grid(True)
 
 plt.show()
