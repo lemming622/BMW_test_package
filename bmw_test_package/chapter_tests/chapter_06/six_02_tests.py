@@ -134,6 +134,14 @@ class Six02Tests(unittest.TestCase):
             print("Burnout flight path angle:> %.4f" % fpa_bo[1])
 
 
+    def test_GeneralBallisticMissileProblem3(self):
+        """
+        Example problem starting on page 294 of BMW book.
+         A ballistic missile was observed to have a burnout speed and altitude of
+         24,300 ft/sec and 258 nm respectively.  What must the be the maximum
+         free-flight range capability of this missile?
+        """
+
 
 
 def suite():
