@@ -139,7 +139,7 @@ class Six02Tests(unittest.TestCase):
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(Six02Tests('test_GeneralBallisticMissileProblem1'))
-
+    suite.addTest(Six02Tests('test_GeneralBallisticMissileProblem2'))
     return suite
 
 if __name__ == '__main__':

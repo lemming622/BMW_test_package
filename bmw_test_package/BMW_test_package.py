@@ -8,7 +8,7 @@ def suite():
     suite = unittest.TestSuite()
 
     # chapter 6, section 2 tests
-    suite.countTestCases(six_02_tests.suite())
+    suite.addTests(six_02_tests.suite())
 
 
     return suite
