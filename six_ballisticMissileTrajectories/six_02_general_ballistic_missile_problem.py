@@ -208,19 +208,19 @@ def solveForFlightPathAngle(freeFlightRange: float, Q_bo: float) -> (float, floa
     """
 
     freeFlightRangeRad = freeFlightRange * trig.degrees2radians
-    halfAngle = freeFlightRange/2.0 * trig.degrees2radians
+    halfAngle = freeFlightRangeRad/2.0
     rightSide = (2.0 - Q_bo)/Q_bo * math.sin(halfAngle)
 
     asin = []
-    asin[0] = math.asin(rightSide)
-    asin[1] = (180.0 - (asin[0] * trig.radians2degrees)) * trig.degrees2radians
+    asin.append(math.asin(rightSide))
+    asin.append((180.0 - (asin[0] * trig.radians2degrees)) * trig.degrees2radians)
 
     asin[0] -= halfAngle
     asin[1] -= halfAngle
 
     fpa_bo = []
-    fpa_bo[0] = (asin[0] * trig.radians2degrees)/2.0
-    fpa_bo[1] = (asin[1] * trig.radians2degrees)/2.0
+    fpa_bo.append((asin[0] * trig.radians2degrees)/2.0)
+    fpa_bo.append((asin[1] * trig.radians2degrees)/2.0)
 
     return tuple(fpa_bo)
 

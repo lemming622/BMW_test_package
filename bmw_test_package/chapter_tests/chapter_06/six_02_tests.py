@@ -69,9 +69,78 @@ class Six02Tests(unittest.TestCase):
         print("Free-Flight range => %.4f nm" % flightDistance)
         print()
 
-#    def test_something(self):
-#        self.assertEqual(True, False)  # add assertion here
+    def test_GeneralBallisticMissileProblem2(self):
+        """
+        Example problem starting on page 291 of BMW book.
+        A missile's coordinates at burnout are: 30N, 60E.  Reentry is planned for
+        30S, 60W.  Burnout velocity is 1.0817 DU/TU and altitude is 0.025DU.
+        psi is less than 180.
 
+        What must the flight-path angle be at burnout?
+        """
+        print("Problem on pg. 291 - 1st ed")
+
+        v_bo = 1.0817  # in DU/TU
+        h_bo = 0.025  # in DU
+        lat_bo = 30.0
+        lon_bo = 60.0
+        lat_re = -30.0
+        lon_re = -60.0
+
+        typeUsed = ReturnType.CANONICAL
+
+        # Find elliptical radius at burnout
+        r_bo = earth.getMeanEquatorialRadius(typeUsed) + h_bo
+
+        # Find Q_bo
+        Q_bo = six_02_general_ballistic_missile_problem.solveForNondimentionalParametericParameter621(v_bo, r_bo, typeUsed)
+        # should be 1.2
+        self.assertAlmostEqual(Q_bo, 1.2, 2, " Wrong Q_bo")
+
+        # Find psi from spherical trig
+        deltaLat = lat_bo - lat_re
+        # should be 60
+        self.assertAlmostEqual(deltaLat, 60, 1, "Wrong deltaLat")
+        deltaLatRad = deltaLat * trig.degrees2radians
+
+        deltaLon = lon_bo - lon_re
+        # should be 120
+        self.assertAlmostEqual(deltaLon, 120, 1, "Wrong deltaLon")
+        deltaLonRad = deltaLon * trig.degrees2radians
+
+        cosLat = math.cos(deltaLatRad)
+        sinLat = math.sin(deltaLatRad)
+        cosLon = math.cos(deltaLonRad)
+        sinLon = math.sin(deltaLonRad)
+
+        cosFreeFlightAngle = cosLat*cosLon + sinLat*sinLon*cosLon
+        # should be -0.625
+        self.assertAlmostEqual(cosFreeFlightAngle, -0.625, 3, "Wrong cosFreeFlightAngle")
+
+        freeFlightAngle = math.acos(cosFreeFlightAngle) * trig.radians2degrees
+        # should be 128.68218745
+
+        # find flight path angles
+        fpa_bo = six_02_general_ballistic_missile_problem.solveForFlightPathAngle(freeFlightAngle, Q_bo)
+        # should be (0, 39.36)
+        self.assertAlmostEqual(fpa_bo[1], 39.36, 1, "Wrong FPA_bo")
+
+        if Q_bo < 1:
+            if freeFlightAngle < 180:
+                print("Burnout flight path angles:> %.4f $.4f" % fpa_bo[0], fpa_bo[1])
+            else:
+                print("It is impossible to the FPA at burnout for current conditions")
+        elif Q_bo > 1:
+            print("Burnout flight path angle:> %.4f" % fpa_bo[1])
+
+
+
+
+def suite():
+    suite = unittest.TestSuite()
+    suite.addTest(Six02Tests('test_GeneralBallisticMissileProblem1'))
+
+    return suite
 
 if __name__ == '__main__':
     unittest.main()
