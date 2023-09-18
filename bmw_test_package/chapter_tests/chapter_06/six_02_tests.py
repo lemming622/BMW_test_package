@@ -263,14 +263,13 @@ class Six02Tests(unittest.TestCase):
         self.assertAlmostEqual(Q_bo, 0.533, 1, "Wrong Q_bo")
 
         # solve for free - flight angle double
-        freeFlightAngle = six_02_general_ballistic_missile_problem.solveForFreeFlightAngle(Q_bo, FPA_bo);
+        freeFlightAngle = six_02_general_ballistic_missile_problem.solveForFreeFlightAngle(Q_bo, FPA_bo)
         # free - flight angle should be 36.4
         self.assertAlmostEqual(freeFlightAngle, 36.4, 1, "Wrong Free flight angle")
 
         flightDistance = conversions.convertNM2KM(conversions.convertDeg2NM(freeFlightAngle))
         print("Free-Flight range => %.4f km" % flightDistance)
         print()
-
 
 
 def suite():
@@ -287,6 +286,7 @@ def suite():
     # suite.addTest(Six02Tests('test_GeneralBallisticMissileProblem8'))
 
     return suite
+
 
 if __name__ == '__main__':
     unittest.main()
