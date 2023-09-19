@@ -237,7 +237,7 @@ class Six02Tests(unittest.TestCase):
 
         # Q_bo and FPA_bo must be found
 
-        # solve for the missiles's specific energy needs
+        # solve for the missile's specific energy needs
         energy = one_04_constants_of_the_motion.solveForSpecificMechanicalEnergy(v_bo, r_bo, typeUsed)
         # should be -38.1914
         self.assertAlmostEqual(energy, -38.1914, 2, "Wrong energy")
@@ -271,6 +271,129 @@ class Six02Tests(unittest.TestCase):
         print("Free-Flight range => %.4f km" % flightDistance)
         print()
 
+    def test_GeneralBallisticMissileProblem6(self):
+        """
+        Example problem starting on page 244 of BMW book 2nd ed.
+
+        A missile's coordinates at burnout are: 30N, 30W.  Reentry is planned for
+        30S, 120W.  Burnout velocity is 8.5512 km/s and altitude is 159.4534 km.
+        psi is less than 180.
+
+        What must the flight-path angle be at burnout?
+        """
+        print("Problem on pg. 244 - 2nd ed")
+
+        v_bo = 8.5512  # km/s
+        h_bo = 159.4534  # km
+        lat_bo = 30
+        lon_bo = 30
+        lat_re = -30
+        lon_re = 120
+
+        typeUsed = ReturnType.METRIC
+
+        r_bo = earth.getMeanEquatorialRadius(typeUsed) + h_bo
+
+        # find Q_bo
+        Q_bo = six_02_general_ballistic_missile_problem.solveForNondimentionalParametericParameter621(v_bo, r_bo, typeUsed)
+        # should be 1.1933
+        self.assertAlmostEqual(Q_bo, 1.1933, 1, "Wrong Q_bo")
+
+        # find psi from great circle
+        sinLatBo = math.sin(lat_bo*trig.degrees2radians)
+        sinLatRe = math.sin(lat_re*trig.degrees2radians)
+        cosLatBo = math.cos(lat_bo*trig.degrees2radians)
+        cosLatRe = math.cos(lat_re*trig.degrees2radians)
+        cosDeltaLon = math.cos((lon_bo - lon_re)*trig.degrees2radians)
+
+        cosFreeFlightAngle = sinLatBo*sinLatRe + cosLatBo*cosLatRe*cosDeltaLon
+        # should be -0.25
+        self.assertAlmostEqual(cosFreeFlightAngle, -0.25, 2, "Wrong cosFreeFlightAngle")
+
+        freeFlightAngle = math.acos(cosFreeFlightAngle) * trig.radians2degrees
+        # should be 104.48
+
+        # find fpa at burnout
+        fpa_bo = six_02_general_ballistic_missile_problem.solveForFlightPathAngle(freeFlightAngle, Q_bo)
+        # fpa_bo[1] should be 47.9776
+        self.assertAlmostEqual(fpa_bo[1], 47.9776, 1, "Wrong fpa_bo")
+
+        if Q_bo < 1:
+            if freeFlightAngle < 180:
+                print("Burnout flight path angles:> %.4f %.4f" % fpa_bo)
+            else:
+                print("It is impossible to get the FPA at burnout for these conditions")
+        elif Q_bo>1:
+            print("Burnout flight path angle:> %.4f" % fpa_bo[1])
+        else:
+            print("FPA's are close to 0")
+        print()
+
+    def test_GeneralBallisticMissileProblem7(self):
+        """
+        Example problem starting on page 249 of BMW book 2nd ed.
+
+        A ballistic missile was observed to have a burnout speed and altitude of
+        7.4066 km/s and 477.82 km respectively.
+
+        What must be the maximum free-flight range capability of this missile?
+        """
+        print("Problem on pg. 249 - 2nd ed")
+
+        v_bo = 7.4066  # km/s
+        h_bo = 477.82  # km
+
+        typeUsed = ReturnType.METRIC
+
+        r_bo = earth.getMeanEquatorialRadius(typeUsed) + h_bo
+
+        Q_bo = six_02_general_ballistic_missile_problem.solveForNondimentionalParametericParameter621(v_bo, r_bo, typeUsed)
+        # should be 0.95
+        self.assertAlmostEqual(Q_bo, 0.95, delta=0.01, msg="Wrong Q_bo")
+
+        freeFlightRange = six_02_general_ballistic_missile_problem.solveForMaxRangeAngle(Q_bo)
+        # should be 129
+        self.assertAlmostEqual(freeFlightRange, 129, delta=3, msg="Wrong free flight range")
+
+        print("Max range for this missile:> %.4f km" % conversions.convertDEG2KM(freeFlightRange))
+        print()
+
+    def test_GeneralBallisticMissileProblem8(self):
+        """
+        Example problem starting on page 249 of BMW book 2nd ed.
+
+        It is desired to maximize the payload of a new ballistic missile for a
+        free-flight range of 14816 km.  The design burnout altitude has been fixed
+        at 637.09 km.
+
+        What should be the design burnout speed?
+        """
+        print("Problem on pg. 249 - 2nd ed")
+
+        typeUsed = ReturnType.METRIC
+
+        freeFlightRange_km = 14816.0  # km
+        h_bo = 637.09  # km
+
+        freeFlightRange = conversions.convertKM2Canonical(freeFlightRange_km)
+        # should be 2.32
+        self.assertAlmostEqual(freeFlightRange, 2.32, 1, "Wrong free flight range")
+
+        freeFlightRange_deg = freeFlightRange*trig.radians2degrees
+
+        r_bo = earth.getMeanEquatorialRadius(typeUsed) + h_bo
+
+        Q_bo = six_02_general_ballistic_missile_problem.solveForRequiredQAtMaxRange(freeFlightRange_deg)
+        # should be 0.957
+        self.assertAlmostEqual(Q_bo, 0.957, 2, "Wrong Q_bo")
+
+        v_bo = six_02_general_ballistic_missile_problem.solveForVelocity621(Q_bo, r_bo, typeUsed)
+        # should be 7.376
+        self.assertAlmostEqual(v_bo, 7.376, 2, "Wrong v_bo")
+
+        print("Velocity at burnout:> %.4f km/s" % v_bo)
+        print()
+
 
 def suite():
     suite = unittest.TestSuite()
@@ -281,9 +404,9 @@ def suite():
 
     # 2nd ed problems
     suite.addTest(Six02Tests('test_GeneralBallisticMissileProblem5'))
-    # suite.addTest(Six02Tests('test_GeneralBallisticMissileProblem6'))
-    # suite.addTest(Six02Tests('test_GeneralBallisticMissileProblem7'))
-    # suite.addTest(Six02Tests('test_GeneralBallisticMissileProblem8'))
+    suite.addTest(Six02Tests('test_GeneralBallisticMissileProblem6'))
+    suite.addTest(Six02Tests('test_GeneralBallisticMissileProblem7'))
+    suite.addTest(Six02Tests('test_GeneralBallisticMissileProblem8'))
 
     return suite
 
