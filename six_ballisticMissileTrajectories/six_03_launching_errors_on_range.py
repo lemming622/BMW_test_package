@@ -166,7 +166,7 @@ def solveForInfluenceCoefficientBurnoutVelocity(r_bo: float, v_bo: float, fpa_bo
     Returns:
         float: burnout velocity influence coefficient
     """
-    tmp1 = (8.0 * earth.getMu(type)) / (math.pow(v_bo, 3.0) * r_bo)
+    tmp1 = (8.0 * earth.getMu(returntype)) / (math.pow(v_bo, 3.0) * r_bo)
 
     halfAngle = freeFlightRange*trig.degrees2radians/2.0
     fpaRad = 2.0*fpa_bo*trig.degrees2radians
