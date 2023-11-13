@@ -4,16 +4,15 @@ from bmw_test_package.chapter_tests.chapter_06 import six_02_tests, six_03_tests
 
 
 def suite():
-    suite = unittest.TestSuite()
+    suiteRun = unittest.TestSuite()
 
     # chapter 6, section 2 tests
-    suite.addTests(six_02_tests.suite())
+    suiteRun.addTests(six_02_tests.suite())
 
     # chapter 6, section 3 tests
-    suite.addTests(six_03_tests.suite())
+    suiteRun.addTests(six_03_tests.suite())
 
-
-    return suite
+    return suiteRun
 
 
 if __name__ == '__main__':
